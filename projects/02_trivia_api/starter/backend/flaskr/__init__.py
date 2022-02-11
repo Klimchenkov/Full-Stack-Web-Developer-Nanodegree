@@ -38,8 +38,11 @@ def create_app(test_config=None):
 
   @app.route("/categories", methods=['GET'])
   def available_categories():
-    categories=Category.query.order_by(Category.id).all()
-    return jsonify({'success': True, 'categories': {category.id:category.type for category in categories}})
+    try:
+      categories=Category.query.order_by(Category.id).all()
+      return jsonify({'success': True, 'categories': {category.id:category.type for category in categories}})
+    except Exception as e:
+      print(e)
 
   
   '''
@@ -51,22 +54,23 @@ def create_app(test_config=None):
 
   @app.route('/questions', methods=['GET'])
   def get_questions():
-    questions = Question.query.order_by(Question.id).all()
-    categories = Category.query.order_by(Category.id).all()
+    try:
+      questions = Question.query.order_by(Question.id).all()
+      categories = Category.query.order_by(Category.id).all()
+      current_questions = paginate_questions(questions, request)
+      
+      if len(current_questions) == 0:
+        abort(404)
 
-    if questions is None:
-      abort(404)
-    if categories is None:
-      abort(404)
-
-
-    return jsonify({
-      'success': True,
-      'questions': paginate_questions(questions, request),
-      'total_questions': len(questions),
-      'categories': {category.id: category.type for category in categories},
-      'current_category': None
-    })
+      return jsonify({
+        'success': True,
+        'questions': current_questions,
+        'total_questions': len(questions),
+        'categories': {category.id: category.type for category in categories},
+        'current_category': None
+      })
+    except Exception as e:
+      print(e)
    
 
     
@@ -92,8 +96,9 @@ def create_app(test_config=None):
         'success': True,
         "deleted": question_id
       }), 200
-    except:
+    except Exception as e:
       abort(422)
+      print(e)
 
 
 
@@ -112,11 +117,16 @@ def create_app(test_config=None):
   @app.route('/questions', methods=['POST'])
   def add_question():
     body = request.get_json()
+    question=body.get('question', None)
+    answer=body.get('answer', None)
 
     try:
-        question = Question(question=body.get('question', None), answer=body.get('answer', None), difficulty=body.get('difficulty', None), category=body.get('category', None))
+      if question and answer:
+        question = Question(question=question, answer=answer, difficulty=body.get('difficulty', None), category=body.get('category', None))
         question.insert()
         return jsonify({'success': True})
+      else:
+        abort(422)
 
     except: 
       abort(422)
