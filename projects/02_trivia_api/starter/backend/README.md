@@ -99,6 +99,131 @@ GET '/api/v1.0/categories'
 '6' : "Sports"}
 
 ```
+GET '/api/v1.0/questions=${integer}'
+- Fetches a paginated set of questions, a total number of questions, all categories and current category string.
+- Request Arguments: page - integer
+- Returns: An object with 10 paginated questions, total questions, object including all categories, and current category string.
+{
+  "categories": {
+    "1": "Science", 
+    "2": "Art", 
+    "3": "Geography", 
+    "4": "History", 
+    "5": "Entertainment", 
+    "6": "Sports"
+  }, 
+  "current_category": null, 
+  "questions": [
+    {
+      "answer": "Apollo 13", 
+      "category": 5, 
+      "difficulty": 4, 
+      "id": 2, 
+      "question": "What movie earned Tom Hanks his third straight Oscar nomination, in 1996?"
+    }, 
+
+    .... (up to nine more questions)
+
+  ], 
+  "success": true, 
+  "total_questions": 19
+}
+
+'''
+
+DELETE '/api/v1.0/questions/${id}'
+
+- Deletes a specified question using the id of the question
+- Request Arguments: id - integer
+- Returns: Appropriate HTTP status code and the id of the question.
+
+'''
+
+POST '/api/v1.0/questions'
+
+- Sends a post request in order to add a new question
+- Request Body:
+
+{
+    'question':  'Heres a new question string',
+    'answer':  'Heres a new answer string',
+    'difficulty': 1,
+    'category': 3,
+}
+- Returns: Does not return any new data
+
+'''
+
+POST '/api/v1.0/questions/search'
+
+- Sends a post request in order to search for a specific question by search term
+- Request Body:
+
+{
+    'searchTerm': 'this is the term the user is looking for'
+}
+
+- Returns: any array of questions, a number of totalQuestions that met the search term and the current category string
+
+{
+    'questions': [
+        {
+            'id': 1,
+            'question': 'This is a question',
+            'answer': 'This is an answer',
+            'difficulty': 5,
+            'category': 5
+        },
+    ],
+    'totalQuestions': 100,
+    'currentCategory': 'Entertainment'
+}
+
+'''
+
+GET '/api/v1.0/categories/${id}/questions'
+
+- Fetches questions for a category specified by id request argument
+- Request Arguments: id - integer
+- Returns: An object with questions for the specified category, total questions, and current category string
+
+{
+    'questions': [
+        {
+            'id': 1,
+            'question': 'This is a question',
+            'answer': 'This is an answer',
+            'difficulty': 5,
+            'category': 4
+        },
+    ],
+    'totalQuestions': 100,
+    'currentCategory': 'History'
+}
+
+'''
+
+POST '/api/v1.0/quizzes'
+
+- Sends a post request in order to get the next question
+- Request Body:
+
+{
+    'previous_questions': [1, 4, 20, 15],
+    quiz_category': {'id": current category id, type: 'current category type'
+ }
+
+- Returns: a single new question object
+
+{
+    'question': {
+        'id': 1,
+        'question': 'This is a question',
+        'answer': 'This is an answer',
+        'difficulty': 5,
+        'category': 4
+    }
+}
 
 
 ## Testing
